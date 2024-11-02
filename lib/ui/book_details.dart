@@ -3,6 +3,7 @@ import 'package:firestore_test/models/user.dart';
 import 'package:firestore_test/services/db_services.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../models/book.dart';
 
 class BookDetailsScreen extends StatelessWidget {
@@ -15,6 +16,35 @@ class BookDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Razorpay razorpay = Razorpay();
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS,
+        (PaymentSuccessResponse response) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Payment Success: ${response.paymentId}'),
+        ),
+      );
+      _buyBook(context);
+    });
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR,
+        (PaymentFailureResponse response) {
+      debugPrint('Payment Error $response');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Payment Error: ${response.message}'),
+        ),
+      );
+    });
+    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET,
+        (ExternalWalletResponse response) {
+      debugPrint('External Wallet $response');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('External Wallet: ${response.walletName}'),
+        ),
+      );
+    });
+
     return Scaffold(
       appBar: AppBar(title: Text(book.title)),
       body: Padding(
@@ -43,8 +73,19 @@ class BookDetailsScreen extends StatelessWidget {
             user.purchased.contains(book)
                 ? const SizedBox()
                 : ElevatedButton(
-                    onPressed: () => _buyBook(context),
-                    child: const Text("Buy"),
+                    onPressed: () => razorpay.open(
+                      {
+                        // 'key': 'rzp_test_KMIG4Ea0L6dCz8',
+                        'key': 'rzp_test_1DP5mmOlF5G5ag',
+                        'amount': 200 * 100,
+                        'name': 'Book Purchase',
+                        'description': 'Payment for the book ${book.title}',
+                        'prefill': {
+                          'email': user.email,
+                        },
+                      },
+                    ),
+                    child: const Text("Purchase now for 200 INR"),
                   ),
           ],
         ),

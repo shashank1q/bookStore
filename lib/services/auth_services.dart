@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -8,7 +9,7 @@ class Auth {
       await _auth.currentUser!.delete();
       return true;
     } catch (e) {
-      print('deleteUser exception: $e');
+      debugPrint('deleteUser exception: $e');
       return false;
     }
   }
@@ -19,7 +20,7 @@ class Auth {
           .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential.user;
     } catch (e) {
-      print('signup exception: $e');
+      debugPrint('signup exception: $e');
       return null;
     }
   }
@@ -30,7 +31,7 @@ class Auth {
           email: email, password: password);
       return userCredential.user;
     } catch (e) {
-      print('login exception: $e');
+      debugPrint('login exception: $e');
       return null;
     }
   }

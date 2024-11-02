@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firestore_test/models/book.dart';
 import 'package:firestore_test/models/user.dart';
+import 'package:flutter/foundation.dart';
 
 class DataService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -17,14 +18,14 @@ class DataService {
         if (temp != null) {
           myuser = temp;
         } else {
-          print('Invalid referral code');
+          debugPrint('Invalid referral code');
           _db.collection('user').doc(user.uid).delete();
           return null;
         }
       }
       return myuser;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return null;
     }
   }
@@ -38,7 +39,7 @@ class DataService {
       }
       return Myuser.fromMap(snap.data()!);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return null;
     }
   }
@@ -47,7 +48,7 @@ class DataService {
   Future<Myuser?> addPoints(String referralCode, Myuser user) async {
     Myuser? targetuser = await getUser(referralCode);
     if (targetuser == null) {
-      print("can't find user with referral code referralCode");
+      debugPrint("can't find user with referral code referralCode");
       return null;
     }
     user.points += 50;

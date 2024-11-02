@@ -34,6 +34,7 @@ class SignUpPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                keyboardType: TextInputType.emailAddress,
                 controller: emailController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -45,6 +46,8 @@ class SignUpPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                keyboardType: TextInputType.visiblePassword,
+                obscureText: true,
                 controller: passwordController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -75,6 +78,15 @@ class SignUpPage extends StatelessWidget {
   }
 
   _signup(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black54,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
     Auth auth = Auth();
     User? user =
         await auth.signup(emailController.text, passwordController.text);
@@ -85,6 +97,7 @@ class SignUpPage extends StatelessWidget {
       if (!context.mounted) return;
       if (currUser == null) {
         auth.deleteUser();
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid referral code'),
@@ -93,8 +106,10 @@ class SignUpPage extends StatelessWidget {
         return;
       }
       if (!context.mounted) return;
-      context.pushReplacement(Myroutes.homepage);
+      Navigator.of(context).pop();
+      context.pushReplacement(Myroutes.homepage, extra: currUser);
     } else {
+      Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to sign up'),
