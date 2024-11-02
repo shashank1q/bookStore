@@ -78,9 +78,11 @@ class SignUpPage extends StatelessWidget {
     Auth auth = Auth();
     User? user =
         await auth.signup(emailController.text, passwordController.text);
+    if (!context.mounted) return;
     if (user != null) {
       Myuser? currUser =
           await DataService().createUser(user, referralController.text);
+      if (!context.mounted) return;
       if (currUser == null) {
         auth.deleteUser();
         ScaffoldMessenger.of(context).showSnackBar(

@@ -63,6 +63,7 @@ class BookDetailsScreen extends StatelessWidget {
               ),
             ));
     Myuser? temp = await DataService().purchaseBook(user, book);
+    if (!context.mounted) return;
     Navigator.of(context).pop();
     if (temp != null) {
       ScaffoldMessenger.of(context).showSnackBar(

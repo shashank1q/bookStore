@@ -80,8 +80,14 @@ class LoginPage extends StatelessWidget {
             ));
     User? newuser =
         await Auth().login(emailController.text, passwordController.text);
+    if (!context.mounted) {
+      return;
+    }
     if (newuser != null) {
       Myuser? user = await DataService().getUser(newuser.uid);
+      if (!context.mounted) {
+        return;
+      }
       if (user == null) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
